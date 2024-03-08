@@ -45,10 +45,9 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-find_package(console_bridge_vendor REQUIRED) # Provides console_bridge 0.4.0 on platforms without it.
-find_package(console_bridge REQUIRED)
+find_package(rcutils REQUIRED)
 
-#In Visual Studio a special postfix for 
+#In Visual Studio a special postfix for
 #libraries compiled in debug is used
 if(MSVC)
 set(CMAKE_DEBUG_POSTFIX "d")
@@ -75,7 +74,7 @@ add_subdirectory(urdf_parser)
 
 set(PKG_NAME ${PROJECT_NAME})
 set(PKG_LIBRARIES urdfdom_sensor urdfdom_model_state urdfdom_model urdfdom_world)
-set(PKG_DEPENDS urdfdom_headers console_bridge)
+set(PKG_DEPENDS urdfdom_headers rcutils)
 set(PKG_EXPORTS urdfdom)
 set(cmake_conf_file "cmake/urdfdom-config.cmake")
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/${cmake_conf_file}.in" "${CMAKE_BINARY_DIR}/${cmake_conf_file}" @ONLY)
@@ -86,7 +85,7 @@ install(FILES ${CMAKE_BINARY_DIR}/${cmake_conf_file}
 # Make the package config file
 if (NOT MSVC)
   set(PKG_DESC "Unified Robot Description Format")
-  set(PKG_DEPENDS "urdfdom_headers console_bridge") # make the list separated by spaces instead of ;
+  set(PKG_DEPENDS "urdfdom_headers rcutils") # make the list separated by spaces instead of ;
   set(PKG_URDF_LIBS "-lurdfdom_sensor -lurdfdom_model_state -lurdfdom_model -lurdfdom_world")
   set(pkg_conf_file "cmake/pkgconfig/urdfdom.pc")
   configure_file("${CMAKE_CURRENT_SOURCE_DIR}/${pkg_conf_file}.in" "${CMAKE_BINARY_DIR}/${pkg_conf_file}" @ONLY)

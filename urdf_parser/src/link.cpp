@@ -1,13 +1,13 @@
 /*********************************************************************
 * Software License Agreement (BSD License)
-* 
+*
 *  Copyright (c) 2008, Willow Garage, Inc.
 *  All rights reserved.
-* 
+*
 *  Redistribution and use in source and binary forms, with or without
 *  modification, are permitted provided that the following conditions
 *  are met:
-* 
+*
 *   * Redistributions of source code must retain the above copyright
 *     notice, this list of conditions and the following disclaimer.
 *   * Redistributions in binary form must reproduce the above
@@ -17,7 +17,7 @@
 *   * Neither the name of the Willow Garage nor the names of its
 *     contributors may be used to endorse or promote products derived
 *     from this software without specific prior written permission.
-* 
+*
 *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
@@ -43,7 +43,7 @@
 #include <string>
 #include <algorithm>
 #include <tinyxml.h>
-#include <console_bridge/console.h>
+#include <rcutils/logging_macros.h>
 
 namespace urdf{
 
@@ -58,10 +58,10 @@ bool parseMaterial(Material &material, TiXmlElement *config, bool only_name_is_o
 
   if (!config->Attribute("name"))
   {
-    CONSOLE_BRIDGE_logError("Material must contain a name attribute");
+    RCUTILS_LOG_ERROR("Material must contain a name attribute");
     return false;
   }
-  
+
   material.name = config->Attribute("name");
 
   // texture
@@ -85,9 +85,9 @@ bool parseMaterial(Material &material, TiXmlElement *config, bool only_name_is_o
         material.color.init(c->Attribute("rgba"));
         has_rgb = true;
       }
-      catch (ParseError &e) {  
+      catch (ParseError &e) {
         material.color.clear();
-        CONSOLE_BRIDGE_logError(std::string("Material [" + material.name + "] has malformed color rgba values: " + e.what()).c_str());
+        RCUTILS_LOG_ERROR("%s", std::string("Material [" + material.name + "] has malformed color rgba values: " + e.what()).c_str());
       }
     }
   }
@@ -95,8 +95,8 @@ bool parseMaterial(Material &material, TiXmlElement *config, bool only_name_is_o
   if (!has_rgb && !has_filename) {
     if (!only_name_is_ok) // no need for an error if only name is ok
     {
-      if (!has_rgb) CONSOLE_BRIDGE_logError(std::string("Material ["+material.name+"] color has no rgba").c_str());
-      if (!has_filename) CONSOLE_BRIDGE_logError(std::string("Material ["+material.name+"] not defined in file").c_str());
+      if (!has_rgb) RCUTILS_LOG_ERROR("%s", std::string("Material ["+material.name+"] color has no rgba").c_str());
+      if (!has_filename) RCUTILS_LOG_ERROR("%s", std::string("Material ["+material.name+"] not defined in file").c_str());
     }
     return false;
   }
@@ -111,7 +111,7 @@ bool parseSphere(Sphere &s, TiXmlElement *c)
   s.type = Geometry::SPHERE;
   if (!c->Attribute("radius"))
   {
-    CONSOLE_BRIDGE_logError("Sphere shape must have a radius attribute");
+    RCUTILS_LOG_ERROR("Sphere shape must have a radius attribute");
     return false;
   }
 
@@ -123,28 +123,28 @@ bool parseSphere(Sphere &s, TiXmlElement *c)
   {
     std::stringstream stm;
     stm << "radius [" << c->Attribute("radius") << "] is not a valid float: " << e.what();
-    CONSOLE_BRIDGE_logError(stm.str().c_str());
+    RCUTILS_LOG_ERROR("%s", stm.str().c_str());
     return false;
   }
   catch (std::out_of_range &e)
   {
     std::stringstream stm;
     stm << "radius [" << c->Attribute("radius") << "] is out of range: " << e.what();
-    CONSOLE_BRIDGE_logError(stm.str().c_str());
+    RCUTILS_LOG_ERROR("%s", stm.str().c_str());
     return false;
   }
-  
+
   return true;
 }
 
 bool parseBox(Box &b, TiXmlElement *c)
 {
   b.clear();
-  
+
   b.type = Geometry::BOX;
   if (!c->Attribute("size"))
   {
-    CONSOLE_BRIDGE_logError("Box shape has no size attribute");
+    RCUTILS_LOG_ERROR("Box shape has no size attribute");
     return false;
   }
   try
@@ -154,7 +154,7 @@ bool parseBox(Box &b, TiXmlElement *c)
   catch (ParseError &e)
   {
     b.dim.clear();
-    CONSOLE_BRIDGE_logError(e.what());
+    RCUTILS_LOG_ERROR("%s", e.what());
     return false;
   }
   return true;
@@ -168,7 +168,7 @@ bool parseCylinder(Cylinder &y, TiXmlElement *c)
   if (!c->Attribute("length") ||
       !c->Attribute("radius"))
   {
-    CONSOLE_BRIDGE_logError("Cylinder shape must have both length and radius attributes");
+    RCUTILS_LOG_ERROR("Cylinder shape must have both length and radius attributes");
     return false;
   }
 
@@ -180,14 +180,14 @@ bool parseCylinder(Cylinder &y, TiXmlElement *c)
   {
     std::stringstream stm;
     stm << "length [" << c->Attribute("length") << "] is not a valid float";
-    CONSOLE_BRIDGE_logError(stm.str().c_str());
+    RCUTILS_LOG_ERROR("%s", stm.str().c_str());
     return false;
   }
   catch (std::out_of_range &/*e*/)
   {
     std::stringstream stm;
     stm << "length [" << c->Attribute("length") << "] is out of range";
-    CONSOLE_BRIDGE_logError(stm.str().c_str());
+    RCUTILS_LOG_ERROR("%s", stm.str().c_str());
     return false;
   }
 
@@ -199,14 +199,14 @@ bool parseCylinder(Cylinder &y, TiXmlElement *c)
   {
     std::stringstream stm;
     stm << "radius [" << c->Attribute("radius") << "] is not a valid float";
-    CONSOLE_BRIDGE_logError(stm.str().c_str());
+    RCUTILS_LOG_ERROR("%s", stm.str().c_str());
     return false;
   }
   catch (std::out_of_range &/*e*/)
   {
     std::stringstream stm;
     stm << "radius [" << c->Attribute("radius") << "] is out of range";
-    CONSOLE_BRIDGE_logError(stm.str().c_str());
+    RCUTILS_LOG_ERROR("%s", stm.str().c_str());
     return false;
   }
   return true;
@@ -219,7 +219,7 @@ bool parseMesh(Mesh &m, TiXmlElement *c)
 
   m.type = Geometry::MESH;
   if (!c->Attribute("filename")) {
-    CONSOLE_BRIDGE_logError("Mesh must contain a filename attribute");
+    RCUTILS_LOG_ERROR("Mesh must contain a filename attribute");
     return false;
   }
 
@@ -231,7 +231,7 @@ bool parseMesh(Mesh &m, TiXmlElement *c)
     }
     catch (ParseError &e) {
       m.scale.clear();
-      CONSOLE_BRIDGE_logError("Mesh scale was specified, but could not be parsed: %s", e.what());
+      RCUTILS_LOG_ERROR("Mesh scale was specified, but could not be parsed: %s", e.what());
       return false;
     }
   }
@@ -250,7 +250,7 @@ GeometrySharedPtr parseGeometry(TiXmlElement *g)
   TiXmlElement *shape = g->FirstChildElement();
   if (!shape)
   {
-    CONSOLE_BRIDGE_logError("Geometry tag contains no child element.");
+    RCUTILS_LOG_ERROR("Geometry tag contains no child element.");
     return geom;
   }
 
@@ -281,14 +281,14 @@ GeometrySharedPtr parseGeometry(TiXmlElement *g)
     Mesh *m = new Mesh();
     geom.reset(m);
     if (parseMesh(*m, shape))
-      return geom;    
+      return geom;
   }
   else
   {
-    CONSOLE_BRIDGE_logError("Unknown geometry type '%s'", type_name.c_str());
+    RCUTILS_LOG_ERROR("Unknown geometry type '%s'", type_name.c_str());
     return geom;
   }
-  
+
   return GeometrySharedPtr();
 }
 
@@ -307,12 +307,12 @@ bool parseInertial(Inertial &i, TiXmlElement *config)
   TiXmlElement *mass_xml = config->FirstChildElement("mass");
   if (!mass_xml)
   {
-    CONSOLE_BRIDGE_logError("Inertial element must have a mass element");
+    RCUTILS_LOG_ERROR("Inertial element must have a mass element");
     return false;
   }
   if (!mass_xml->Attribute("value"))
   {
-    CONSOLE_BRIDGE_logError("Inertial: mass element must have value attribute");
+    RCUTILS_LOG_ERROR("Inertial: mass element must have value attribute");
     return false;
   }
 
@@ -325,7 +325,7 @@ bool parseInertial(Inertial &i, TiXmlElement *config)
     std::stringstream stm;
     stm << "Inertial: mass [" << mass_xml->Attribute("value")
         << "] is not a float";
-    CONSOLE_BRIDGE_logError(stm.str().c_str());
+    RCUTILS_LOG_ERROR("%s", stm.str().c_str());
     return false;
   }
   catch (std::out_of_range &/*e*/)
@@ -333,21 +333,21 @@ bool parseInertial(Inertial &i, TiXmlElement *config)
     std::stringstream stm;
     stm << "Inertial: mass [" << mass_xml->Attribute("value")
         << "] is out of range";
-    CONSOLE_BRIDGE_logError(stm.str().c_str());
+    RCUTILS_LOG_ERROR("%s", stm.str().c_str());
     return false;
   }
 
   TiXmlElement *inertia_xml = config->FirstChildElement("inertia");
   if (!inertia_xml)
   {
-    CONSOLE_BRIDGE_logError("Inertial element must have inertia element");
+    RCUTILS_LOG_ERROR("Inertial element must have inertia element");
     return false;
   }
   if (!(inertia_xml->Attribute("ixx") && inertia_xml->Attribute("ixy") && inertia_xml->Attribute("ixz") &&
         inertia_xml->Attribute("iyy") && inertia_xml->Attribute("iyz") &&
         inertia_xml->Attribute("izz")))
   {
-    CONSOLE_BRIDGE_logError("Inertial: inertia element must have ixx,ixy,ixz,iyy,iyz,izz attributes");
+    RCUTILS_LOG_ERROR("Inertial: inertia element must have ixx,ixy,ixz,iyy,iyz,izz attributes");
     return false;
   }
   try
@@ -369,7 +369,7 @@ bool parseInertial(Inertial &i, TiXmlElement *config)
         << " iyy [" << inertia_xml->Attribute("iyy") << "]"
         << " iyz [" << inertia_xml->Attribute("iyz") << "]"
         << " izz [" << inertia_xml->Attribute("izz") << "]";
-    CONSOLE_BRIDGE_logError(stm.str().c_str());
+    RCUTILS_LOG_ERROR("%s", stm.str().c_str());
     return false;
   }
   catch (std::out_of_range &/*e*/)
@@ -382,7 +382,7 @@ bool parseInertial(Inertial &i, TiXmlElement *config)
         << " iyy [" << inertia_xml->Attribute("iyy") << "]"
         << " iyz [" << inertia_xml->Attribute("iyz") << "]"
         << " izz [" << inertia_xml->Attribute("izz") << "]";
-    CONSOLE_BRIDGE_logError(stm.str().c_str());
+    RCUTILS_LOG_ERROR("%s", stm.str().c_str());
     return false;
   }
   return true;
@@ -414,24 +414,24 @@ bool parseVisual(Visual &vis, TiXmlElement *config)
   if (mat) {
     // get material name
     if (!mat->Attribute("name")) {
-      CONSOLE_BRIDGE_logError("Visual material must contain a name attribute");
+      RCUTILS_LOG_ERROR("Visual material must contain a name attribute");
       return false;
     }
     vis.material_name = mat->Attribute("name");
-    
+
     // try to parse material element in place
     vis.material.reset(new Material());
     if (!parseMaterial(*vis.material, mat, true))
     {
-      CONSOLE_BRIDGE_logDebug("urdfdom: material has only name, actual material definition may be in the model");
+      RCUTILS_LOG_DEBUG("urdfdom: material has only name, actual material definition may be in the model");
     }
   }
-  
+
   return true;
 }
 
 bool parseCollision(Collision &col, TiXmlElement* config)
-{  
+{
   col.clear();
 
   // Origin
@@ -440,7 +440,7 @@ bool parseCollision(Collision &col, TiXmlElement* config)
     if (!parsePose(col.origin, o))
       return false;
   }
-  
+
   // Geometry
   TiXmlElement *geom = config->FirstChildElement("geometry");
   col.geometry = parseGeometry(geom);
@@ -456,13 +456,13 @@ bool parseCollision(Collision &col, TiXmlElement* config)
 
 bool parseLink(Link &link, TiXmlElement* config)
 {
-  
+
   link.clear();
 
   const char *name_char = config->Attribute("name");
   if (!name_char)
   {
-    CONSOLE_BRIDGE_logError("No name given for the link.");
+    RCUTILS_LOG_ERROR("No name given for the link.");
     return false;
   }
   link.name = std::string(name_char);
@@ -474,7 +474,7 @@ bool parseLink(Link &link, TiXmlElement* config)
     link.inertial.reset(new Inertial());
     if (!parseInertial(*link.inertial, i))
     {
-      CONSOLE_BRIDGE_logError("Could not parse inertial element for Link [%s]", link.name.c_str());
+      RCUTILS_LOG_ERROR("Could not parse inertial element for Link [%s]", link.name.c_str());
       return false;
     }
   }
@@ -492,7 +492,7 @@ bool parseLink(Link &link, TiXmlElement* config)
     else
     {
       vis.reset();
-      CONSOLE_BRIDGE_logError("Could not parse visual element for Link [%s]", link.name.c_str());
+      RCUTILS_LOG_ERROR("Could not parse visual element for Link [%s]", link.name.c_str());
       return false;
     }
   }
@@ -501,25 +501,25 @@ bool parseLink(Link &link, TiXmlElement* config)
   // Assign the first visual to the .visual ptr, if it exists
   if (!link.visual_array.empty())
     link.visual = link.visual_array[0];
-  
+
   // Multiple Collisions (optional)
   for (TiXmlElement* col_xml = config->FirstChildElement("collision"); col_xml; col_xml = col_xml->NextSiblingElement("collision"))
   {
     CollisionSharedPtr col;
     col.reset(new Collision());
     if (parseCollision(*col, col_xml))
-    {      
+    {
       link.collision_array.push_back(col);
     }
     else
     {
       col.reset();
-      CONSOLE_BRIDGE_logError("Could not parse collision element for Link [%s]",  link.name.c_str());
+      RCUTILS_LOG_ERROR("Could not parse collision element for Link [%s]",  link.name.c_str());
       return false;
     }
   }
-  
-  // Collision (optional)  
+
+  // Collision (optional)
   // Assign the first collision to the .collision ptr, if it exists
   if (!link.collision_array.empty())
     link.collision = link.collision_array[0];
@@ -607,7 +607,7 @@ bool exportGeometry(GeometrySharedPtr &geom, TiXmlElement *xml)
   }
   else
   {
-    CONSOLE_BRIDGE_logError("geometry not specified, I'll make one up for you!");
+    RCUTILS_LOG_ERROR("geometry not specified, I'll make one up for you!");
     Sphere *s = new Sphere();
     s->radius = 0.03;
     geom.reset(s);
@@ -643,7 +643,7 @@ bool exportInertial(Inertial &i, TiXmlElement *xml)
   inertial_xml->LinkEndChild(inertia_xml);
 
   xml->LinkEndChild(inertial_xml);
-  
+
   return true;
 }
 
@@ -671,7 +671,7 @@ bool exportVisual(Visual &vis, TiXmlElement *xml)
 }
 
 bool exportCollision(Collision &col, TiXmlElement* xml)
-{  
+{
   // <collision group="default">
   //   <origin rpy="0 0 0" xyz="0 0 0"/>
   //   <geometry>

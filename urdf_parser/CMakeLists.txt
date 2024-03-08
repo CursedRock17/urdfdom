@@ -16,10 +16,10 @@ compiler respects the command-line ordering.
 
 In this particular case, requiring TinyXML in this package added
 `-I/usr/local/include` to the build command and caused Clang to select the
-system's `console_bridge`, instead of the vendored version. To select the
-`console_bridge` in `console_bridge_vendor`, we need to use the `SYSTEM` keyword
+system's `rcutils`, instead of the vendored version. To select the
+`rcutils` in `rcutils_vendor`, we need to use the `SYSTEM` keyword
 when including TinyXML for the compiler to respect the command-line ordering and
-to select the vendored version of `console_bridge`.
+to select the vendored version of `rcutils`.
 ]]
 add_library(urdfdom_world SHARED
   src/pose.cpp
@@ -33,7 +33,7 @@ target_include_directories(urdfdom_world PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:include>")
 target_link_libraries(urdfdom_world PUBLIC
-  console_bridge::console_bridge
+  rcutils::rcutils
   urdfdom_headers::urdfdom_headers
   ${TinyXML_LIBRARIES})
 set_target_properties(urdfdom_world PROPERTIES SOVERSION ${URDF_MAJOR_MINOR_VERSION})
@@ -49,7 +49,7 @@ target_include_directories(urdfdom_model PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:include>")
 target_link_libraries(urdfdom_model PUBLIC
-  console_bridge::console_bridge
+  rcutils::rcutils
   urdfdom_headers::urdfdom_headers
   ${TinyXML_LIBRARIES})
 set_target_properties(urdfdom_model PROPERTIES SOVERSION ${URDF_MAJOR_MINOR_VERSION})
@@ -62,7 +62,7 @@ target_include_directories(urdfdom_sensor PUBLIC
   "$<INSTALL_INTERFACE:include>")
 target_link_libraries(urdfdom_sensor PUBLIC
   urdfdom_model
-  console_bridge::console_bridge
+  rcutils::rcutils
   urdfdom_headers::urdfdom_headers
   ${TinyXML_LIBRARIES})
 set_target_properties(urdfdom_sensor PROPERTIES SOVERSION ${URDF_MAJOR_MINOR_VERSION})
@@ -76,7 +76,7 @@ target_include_directories(urdfdom_model_state PUBLIC
   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
   "$<INSTALL_INTERFACE:include>")
 target_link_libraries(urdfdom_model_state
-  console_bridge::console_bridge
+  rcutils::rcutils
   urdfdom_headers::urdfdom_headers
   ${TinyXML_LIBRARIES})
 set_target_properties(urdfdom_model_state PROPERTIES SOVERSION ${URDF_MAJOR_MINOR_VERSION})
